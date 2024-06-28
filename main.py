@@ -5,6 +5,9 @@ import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
 
 # Load the trained model
 with open('linear_regression_model.pkl', 'rb') as model_file:
@@ -12,6 +15,16 @@ with open('linear_regression_model.pkl', 'rb') as model_file:
 
 # Load the dataset for visualization
 dataset = pd.read_csv('Online_Dating_Behavior_Dataset.csv')
+
+# Define features and target variable
+X = dataset.drop(columns=['Matches'])
+y = dataset['Matches']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Make predictions on the test set using the loaded model
+y_pred = model.predict(X_test)
 
 def predict_matches():
     try:
@@ -107,5 +120,30 @@ scatter_button.grid(row=9, columnspan=2, pady=5)
 
 box_plot_button = tk.Button(root, text="Show Box Plot of Income by Age", command=show_box_plot)
 box_plot_button.grid(row=10, columnspan=2, pady=5)
+
+# Correlation matrix
+# plt.figure(figsize=(10, 8))
+# sns.heatmap(dataset.corr(), annot=True, cmap='coolwarm')
+# plt.title('Correlation Matrix')
+# plt.show()
+
+# # Regression coefficients
+# coefficients = pd.DataFrame({'Feature': X.columns, 'Coefficient': model.coef_})
+# plt.figure(figsize=(10, 6))
+# coefficients.plot(kind='bar', x='Feature', y='Coefficient', legend=False)
+# plt.title('Regression Coefficients')
+# plt.show()
+
+# # Actual vs. Predicted Matches
+# plt.figure(figsize=(10, 6))
+# plt.scatter(y_test, y_pred, alpha=0.5)
+# plt.title('Actual vs. Predicted Matches')
+# plt.xlabel('Actual Matches')
+# plt.ylabel('Predicted Matches')
+# plt.show()
+
+# Print model performance metrics
+print(f'Mean Squared Error: {mean_squared_error(y_test, y_pred)}')
+print(f'R-squared: {r2_score(y_test, y_pred)}')
 
 root.mainloop()
